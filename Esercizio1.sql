@@ -44,39 +44,107 @@ DROP TABLE fornitori;
 --*/
 
 -- inserimento dati
-INSERT INTO clienti (nome, cognome, datanascita, regioneresidenza) VALUES ('Mario', 'Rossi', 1980, 'Lazio');
-INSERT INTO clienti (nome, cognome, datanascita, regioneresidenza) VALUES ('Anna', 'Verdi', 1982, 'Lazio');
-INSERT INTO clienti (nome, cognome, datanascita, regioneresidenza) VALUES ('Aldo', 'Neri', 1982, 'Lombardia');
-INSERT INTO clienti (nome, cognome, datanascita, regioneresidenza) VALUES ('Giovanni', 'Bianchi', 1990, 'Puglia');
-INSERT INTO clienti (nome, cognome, datanascita, regioneresidenza) VALUES ('Giulia', 'Rosa', 1980, 'Basilicata');
+INSERT INTO clienti (nome, cognome, datanascita, regioneresidenza)
+			VALUES	('Mario', 'Rossi', 1980, 'Lazio'),
+					('Anna', 'Verdi', 1982, 'Lazio'),
+					('Aldo', 'Neri', 1982, 'Lombardia'
+					('Giovanni', 'Bianchi', 1990, 'Puglia')
+					('Giulia', 'Rosa', 1980, 'Basilicata');
 
-INSERT INTO fatture (tipologia, importo, iva, idcliente, datafattura, numerofornitore) VALUES ('A', 50, 10, 3, 2022, 2);
-INSERT INTO fatture (tipologia, importo, iva, idcliente, datafattura, numerofornitore) VALUES ('A', 20, 20, 2, 2020, 2);
-INSERT INTO fatture (tipologia, importo, iva, idcliente, datafattura, numerofornitore) VALUES ('B', 30, 20, 2, 2021, 1);
-INSERT INTO fatture (tipologia, importo, iva, idcliente, datafattura, numerofornitore) VALUES ('A', 100, 10, 1, 2022, 2);
+INSERT INTO fatture (tipologia, importo, iva, idcliente, datafattura, numerofornitore)
+			 VALUES	('A', 50, 10, 3, 2022, 2),
+					('A', 20, 20, 2, 2020, 2),
+					('B', 30, 20, 2, 2021, 1),
+					('A', 100, 10, 1, 2022, 2);
 
-INSERT INTO prodotti (descrizione, inproduzione, incommercio, dataattivazione, datadisattivazione) VALUES ('pallone da calcio', TRUE, FALSE, 2017, 2120);
-INSERT INTO prodotti (descrizione, inproduzione, incommercio, dataattivazione, datadisattivazione) VALUES ('pallone da pallavolo', TRUE, TRUE, 2022, 2122);
-INSERT INTO prodotti (descrizione, inproduzione, incommercio, dataattivazione, datadisattivazione) VALUES ('pallone da basket', FALSE, TRUE, 2017, 2121);
-INSERT INTO prodotti (descrizione, inproduzione, incommercio, dataattivazione, datadisattivazione) VALUES ('ombrellone da spiaggia', FALSE, FALSE, 2017, 2040);
-INSERT INTO prodotti (descrizione, inproduzione, incommercio, dataattivazione, datadisattivazione) VALUES ('tiragraffi per gatti', TRUE, TRUE, 2023, 2025);
-
-INSERT INTO fornitori (denominazione, regioneresidenza) VALUES ('MondoSport', 'Lazio');
-INSERT INTO fornitori (denominazione, regioneresidenza) VALUES ('PetWorld', 'Lombardia');
-INSERT INTO fornitori (denominazione, regioneresidenza) VALUES ('Funlab', 'Veneto');
+INSERT INTO prodotti (descrizione, inproduzione, incommercio, dataattivazione, datadisattivazione)
+			 VALUES	('pallone da calcio', TRUE, FALSE, 2017, 2120),
+			 		('pallone da pallavolo', TRUE, TRUE, 2022, 2122),
+			 		('pallone da basket', FALSE, TRUE, 2017, 2121),
+			 		('ombrellone da spiaggia', FALSE, FALSE, 2017, 2040),
+			 		('tiragraffi per gatti', TRUE, TRUE, 2023, 2025);
 
 
--- QUERIES
+INSERT INTO fornitori (denominazione, regioneresidenza)
+			 VALUES ('MondoSport', 'Lazio'),
+			 		('PetWorld', 'Lombardia'),
+			 		('Funlab', 'Veneto');
 
-SELECT nome, cognome FROM clienti WHERE datanascita = 1982;
-SELECT numerofattura FROM fatture WHERE iva = 20;
-SELECT datafattura, SUM (importo) AS somma FROM fatture GROUP BY datafattura; /* ??? */
-SELECT descrizione FROM prodotti WHERE dataattivazione = 2017 and inproduzione = TRUE or incommercio = TRUE;
-SELECT datafattura, count(*) FROM fatture WHERE iva = 20 GROUP BY datafattura;
-SELECT datafattura, count(*) FROM fatture WHERE tipologia = 'A' GROUP BY datafattura HAVING COUNT(*) >= 2;
-SELECT numerofattura, importo, iva, datafattura, denominazione FROM fatture INNER JOIN fornitori on fatture.numerofornitore = fornitori.numerofornitore;
-SELECT SUM (importo) AS somma FROM fatture INNER JOIN clienti on fatture.idcliente = clienti.numerocliente GROUP BY regioneresidenza;
---SELECT * FROM clienti WHERE datanascita = 1980 and fatture.idcliente in (SELECT idcliente FROM fatture WHERE importo > 50);
---SELECT idcliente FROM fatture WHERE importo > 50 and idcliente IN (SELECT nome FROM clienti WHERE datanascita = 1980);
 
--- Boh non ci sto riuscendo
+/* QUERIES */
+			 
+--Estrarre il nome e il cognome dei clienti nati nel 1982
+SELECT
+	nome, cognome
+	FROM clienti
+	WHERE datanascita = 1982;
+	
+--Estrarre il numero delle fatture con iva al 20%
+SELECT
+	numerofattura
+	FROM fatture
+	WHERE iva = 20;
+	
+--Riportare il numero di fatture e la somma dei relativi importi divisi per anno di fatturazione
+SELECT 
+	datafattura AS anno,
+	COUNT(*),
+	SUM(importo) AS somma
+	FROM fatture
+	GROUP BY datafattura;
+	
+--Estrarre i prodotti attivati nel 2017 e che sono in produzione oppure in commercio
+SELECT
+	descrizione
+	FROM prodotti
+	WHERE dataattivazione = 2017
+	and inproduzione = TRUE
+	or incommercio = TRUE;
+	
+--Considerando soltanto le fatture con iva al 20 per cento, estrarre il numero di fatture per ogni anno
+SELECT
+	datafattura,
+	count(*)
+	FROM fatture
+	WHERE iva = 20
+	GROUP BY datafattura;
+	
+--Estrarre gli anni in cui sono state registrate più di 2 fatture con tipologia ‘A’
+SELECT
+	datafattura,
+	count(*)
+	FROM fatture
+	WHERE tipologia = 'A'
+	GROUP BY datafattura
+	HAVING COUNT(*) >= 2;
+	
+--Riportare l’elenco delle fatture (numero, importo, iva e data) con in aggiunta il nome del fornitore
+SELECT
+	numerofattura, importo, iva, datafattura, denominazione
+	FROM fatture
+	INNER JOIN fornitori
+	on fatture.numerofornitore = fornitori.numerofornitore;
+	
+--Estrarre il totale degli importi delle fatture divisi per residenza dei clienti
+SELECT
+	SUM (importo) AS somma
+	FROM fatture
+	INNER JOIN clienti
+	on fatture.idcliente = clienti.numerocliente
+	GROUP BY regioneresidenza;
+	
+--Estrarre il numero dei clienti nati nel 1980 che hanno almeno una fattura superiore a 50 euro
+SELECT
+	COUNT(c.numerocliente)
+	FROM clienti AS c
+	INNER JOIN fatture AS f
+	ON c.numerocliente = f.idcliente
+	WHERE datanascita = 1980
+	AND f.importo > 50;
+
+/* Estrarre una colonna di nome “Denominazione” contenente il nome, seguito da un carattere “-“, seguito dal cognome, per i
+soli clienti residenti nella regione Lombardia */
+SELECT
+	CONCAT (nome, ' - ', cognome) AS denominazione
+	FROM clienti
+	WHERE regioneresidenza = 'Lombardia';
